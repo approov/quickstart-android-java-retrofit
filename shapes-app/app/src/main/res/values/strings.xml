@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">Approov Retrofit Shapes</string>
+    <string name="app_title">Demo</string>
+    <string name="check_network_label">Say Hello</string>
+    <string name="check_shapes_label">Get Shape</string>
+</resources>
