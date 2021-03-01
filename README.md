@@ -106,6 +106,8 @@ Instead of constructing the `Retrofit` object lazily here we construct the build
 
 The `ApproovService` constructs a custom `OkHttpClient` that adds the `Approov-Token` header and also applies pinning for the connections to ensure that no Man-in-the-Middle can eavesdrop on any communication being made. If the pins are changed then a new `Retrofit` instance is automatically created.
 
+Run the app again to ensure that the `app-debug.apk` in the generated build outputs is up to date.
+
 ## REGISTER YOUR APP WITH APPROOV
 
 In order for Approov to recognize the app as being valid it needs to be registered with the service. Change directory to the top level of the `shapes-app` project and then register the app with Approov:
