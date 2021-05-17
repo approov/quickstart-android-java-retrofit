@@ -33,6 +33,6 @@ public class ShapesApp extends Application {
         super.onCreate();
 
         // *** UNCOMMENT THE LINE BELOW FOR APPROOV ***
-        //approovService = new ApproovService(getApplicationContext(), getResources().getString(R.string.approov_config));
+        //approovService = new ApproovService(getApplicationContext(), "<enter-your-config-string-here>");
     }
 }
