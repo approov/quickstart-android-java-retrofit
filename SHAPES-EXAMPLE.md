@@ -46,10 +46,6 @@ maven { url 'https://jitpack.io' }
 
 The `approov-service-retrofit` dependency needs to be added as follows to the `app/build.gradle:38` at the app level:
 
-```
-implementation 'com.github.approov:approov-service-retrofit:main-SNAPSHOT'
-```
-
 ![App Build Gradle](readme-images/app-gradle.png)
 
 Note that in this case the dependency has been added with the tag `main-SNAPSHOT`. We recommend you add a dependency to a specific version:
