@@ -55,9 +55,9 @@ If want to use [Token Binding](https://approov.io/docs/latest/approov-usage-docu
 YourApp.approovService.setBindingHeader("Authorization")
 ```
 
-In this case it means that the value of `Authorization` holds the token value to be bound. This only needs to be called once. On subsequent requests the value of the specified header is read and its value set as the token binding value. Note that if the header is not present on a request then the value `NONE` is used. Note that you should only select a header that is normally always present and the value does not typically change from request to request, as each change requires a new Approov token to be fetched.
+In this case it means that the value of `Authorization` holds the token value to be bound. This only needs to be called once. On subsequent requests the value of the specified header is read and its value set as the token binding value. Note that you should only select a header that is normally always present and the value does not typically change from request to request, as each change requires a new Approov token to be fetched.
 
-## Token Prefetching
+### Token Prefetching
 If you wish to reduce the latency associated with fetching the first Approov token, then make this call immediately after creating `ApproovService`:
 
 ```Java
@@ -66,6 +66,5 @@ YourApp.approovService.prefetchApproovToken()
 
 This initiates the process of fetching an Approov token as a background task, so that a cached token is available immediately when subsequently needed, or at least the fetch time is reduced. Note that there is no point in performing a prefetch if you are using token binding.
 
-## Changing Configuration Persistence
+### Changing Configuration Persistence
 An Approov app automatically downloads any new configurations of APIs and their pins that are available. These are stored in the [`SharedPreferences`](https://developer.android.com/reference/android/content/SharedPreferences) for the app in a preference file `approov-prefs` and key `approov-config`. You can store the preferences differently by modifying or overriding the methods `ApproovService.putApproovDynamicConfig` and `ApproovService.getApproovDynamicConfig`.
-
