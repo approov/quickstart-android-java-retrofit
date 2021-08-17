@@ -60,7 +60,7 @@ Note that `approov-service-retrofit` is actually an open source wrapper layer th
 
 ## ENSURE THE SHAPES API IS ADDED
 
-In order for Approov tokens to be generated for `https://shapes.approov.io/v2/shapes` it is necessary to inform Approov about it. If you are using a demo account this is unnecessary as it is already setup. For a trial account do:
+In order for Approov tokens to be generated for `https://shapes.approov.io/v2/shapes` it is necessary to inform Approov about it:
 ```
 approov api -add shapes.approov.io
 ```
