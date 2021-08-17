@@ -93,14 +93,14 @@ By default, the Retrofit instance gets a default client constructed with `new Ok
 
 ```Java
 OkHttpClient client = new OkHttpClient.Builder().connectTimeout(5, TimeUnit.SECONDS).build();
-retrofit = new retrofit2.Retrofit.Builder().baseUrl("your.domain/").client(client).build();
+Retrofit retrofit = new retrofit2.Retrofit.Builder().baseUrl("https://your.domain/").client(client).build();
 ```
 Pass the modified `OkHttp.Builder` to the `ApproovService` as follows:
 
 ```Java
 YourApp.approovService.setOkHttpClientBuilder(new OkHttpClient.Builder().connectTimeout(5, TimeUnit.SECONDS));
-retrofitBuilder = new retrofit2.Retrofit.Builder().baseUrl("your.domain/");
-retrofit = YourApp.approovService.getRetrofit(retrofitBuilder);
+Retrofit.Builder retrofitBuilder = new retrofit2.Retrofit.Builder().baseUrl("https://your.domain/");
+Retrofit retrofit = YourApp.approovService.getRetrofit(retrofitBuilder);
 ```
 
 This call to `setOkHttpClientBuilder` only needs to be made once. Subsequent calls to `YourApp.approovService.getRetrofit()` will then always a `OkHttpClient` with the builder values included.
