@@ -1,4 +1,3 @@
-// Retrofit Model of Hello Text
 //
 // MIT License
 //

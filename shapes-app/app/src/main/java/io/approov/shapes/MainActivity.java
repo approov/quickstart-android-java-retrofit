@@ -1,4 +1,3 @@
-// Main activity for Approov Shapes App Demo (using Retrofit)
 //
 // MIT License
 //
@@ -26,10 +25,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -41,7 +38,7 @@ public class MainActivity extends Activity {
     private View statusView = null;
     private ImageView statusImageView = null;
     private TextView statusTextView = null;
-    private Button connectivityCheckButton = null;
+    private Button helloCheckButton = null;
     private Button shapesCheckButton = null;
 
     @Override
@@ -54,11 +51,11 @@ public class MainActivity extends Activity {
         statusView = findViewById(R.id.viewStatus);
         statusImageView = (ImageView) findViewById(R.id.imgStatus);
         statusTextView = findViewById(R.id.txtStatus);
-        connectivityCheckButton = findViewById(R.id.btnConnectionCheck);
+        helloCheckButton = findViewById(R.id.btnConnectionCheck);
         shapesCheckButton = findViewById(R.id.btnShapesCheck);
 
-        // handle connection check
-        connectivityCheckButton.setOnClickListener(new View.OnClickListener() {
+        // handle hello connection check
+        helloCheckButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // hide status
@@ -78,13 +75,13 @@ public class MainActivity extends Activity {
                         final int imgId;
                         String message = "Http status code " + response.code();
                         if (response.isSuccessful()) {
-                            Log.d(TAG,"Connectivity call successful");
+                            Log.d(TAG,"Hello call successful");
                             imgId = R.drawable.hello;
                             HelloModel hello = response.body();
                             if (hello.getText() != null)
                                 message = hello.getText();
                         } else {
-                            Log.d(TAG,"Connectivity call unsuccessful");
+                            Log.d(TAG,"Hello call unsuccessful");
                             imgId = R.drawable.confused;
                         }
                         final String msg = message;
@@ -101,7 +98,7 @@ public class MainActivity extends Activity {
 
                     @Override
                     public void onFailure(Call<HelloModel> call, Throwable t) {
-                        Log.d(TAG, "Connectivity call failed");
+                        Log.d(TAG, "Hello call failed");
                         final int imgId = R.drawable.confused;
                         final String msg = "Request failed: " + t.getMessage();
 
@@ -132,7 +129,10 @@ public class MainActivity extends Activity {
 
                 // Make a Retrofit request to get a shape
                 ShapesService service = ShapesClientInstance.getRetrofitInstance().create(ShapesService.class);
-                Call<ShapeModel> call = service.getShape();
+                Map<String, String> headers = new HashMap<>();
+                String apiKey = getResources().getString(R.string.shapes_api_key);
+                headers.put("Api-Key", apiKey);
+                Call<ShapeModel> call = service.getShape(headers);
                 call.enqueue(new Callback<ShapeModel>() {
                     @Override
                     public void onResponse(Call<ShapeModel> call, Response<ShapeModel> response) {
@@ -170,7 +170,7 @@ public class MainActivity extends Activity {
 
                     @Override
                     public void onFailure(Call<ShapeModel> call, Throwable t) {
-                        Log.d(TAG, "Shapes call failed");
+                        Log.d(TAG, "Shapes call failed: " + t.getMessage());
                         final int imgId = R.drawable.confused;
                         final String msg = "Request failed: " + t.getMessage();
                         activity.runOnUiThread(new Runnable() {

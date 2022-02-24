@@ -1,4 +1,3 @@
-// Retrofit Service Interface for Shapes
 //
 // MIT License
 //
@@ -18,12 +17,18 @@
 
 package io.approov.shapes;
 
+import java.util.Map;
+
 import retrofit2.Call;
 import retrofit2.http.GET;
+import retrofit2.http.HeaderMap;
 
 public interface ShapesService {
-    @GET("/v2/shapes")
-    Call<ShapeModel> getShape();
+    // *** COMMENT THE LINES BELOW WHEN USING APPROOV WITH TOKEN PROTECTION ***
+    @GET("/v1/shapes")
+    // *** UNCOMMENT THE LINES BELOW WHEN USING APPROOV WITH TOKEN PROTECTION ***
+    //@GET("/v3/shapes")
+    Call<ShapeModel> getShape(@HeaderMap Map<String, String> headers);
 
     @GET("/v1/hello")
     Call<HelloModel> getHello();

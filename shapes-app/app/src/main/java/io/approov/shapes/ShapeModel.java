@@ -1,4 +1,3 @@
-// Retrofit Model of Shapes
 //
 // MIT License
 //

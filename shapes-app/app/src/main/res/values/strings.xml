@@ -3,4 +3,5 @@
     <string name="app_title">Demo</string>
     <string name="check_network_label">Say Hello</string>
     <string name="check_shapes_label">Get Shape</string>
+    <string name="shapes_api_key">yXClypapWNHIifHUWmBIyPFAm</string>
 </resources>
