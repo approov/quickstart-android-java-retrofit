@@ -25,7 +25,7 @@ Secondly, add the dependency in your app's `build.gradle`:
 
 ```
 dependencies {
-	implementation 'com.github.approov:approov-service-retrofit:3.0.0'
+	implementation 'com.github.approov:approov-service-retrofit:3.0.1'
 }
 ```
 
