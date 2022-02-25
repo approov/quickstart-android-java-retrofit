@@ -29,7 +29,7 @@ Click on the `Say Hello` button and you should see this:
 This checks the connectivity by connecting to the endpoint `https://shapes.approov.io/v1/hello`. Now press the `Get Shape` button and you will see this (or another shape):
 
 <p>
-    <img src="readme-images/shapes-good.png" width="256" title="Shapes Bad">
+    <img src="readme-images/shapes-good.png" width="256" title="Shapes Good">
 </p>
 
 This contacts `https://shapes.approov.io/v1/shapes` to get the name of a random shape. This endpoint is protected with an API key that is built into the code, and therefore can be easily extracted from the app.
