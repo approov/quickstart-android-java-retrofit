@@ -14,6 +14,8 @@ Ensure managed trust roots are enabled using:
 approov pin -setManagedTrustRoots on 
 ```
 
+> Note that this command requires an [admin role](https://approov.io/docs/latest/approov-usage-documentation/#account-access-roles).
+
 This ensures connections may only use official certificates, and blocks the use of self signed certificates that might be used by a Man-in-the-Middle (MitM) attacker.
 
 ## ADDING API DOMAINS
@@ -32,6 +34,8 @@ It is assumed that you already have some client secrets and/or API keys in your 
 approov secstrings -setEnabled
 ```
 
+> Note that this command requires an [admin role](https://approov.io/docs/latest/approov-usage-documentation/#account-access-roles).
+
 The quickstart integration works by allowing you to replace the secret in your app with a placeholder value instead, and then the placeholder value is mapped to the actual secret value on the fly by the interceptor (if the app passes Approov attestation). The shipped app code will only contain the placeholder values.
 
 If your app currently uses `<secret-value>` then replace it in your app with the value `<secret-placeholder>`. Choose a suitable placeholder name to reflect the type of the secret. The placeholder value will be added to requests in the normal way, but you should be using the Approov enabled networking client to perfom the substituion.
@@ -41,6 +45,8 @@ You must inform Approov that it should substitute `<secret-placeholder>` for `<s
 ```
 approov secstrings -addKey <secret-placeholder> -predefinedValue <secret-value>
 ```
+
+> Note that this command also requires an [admin role](https://approov.io/docs/latest/approov-usage-documentation/#account-access-roles).
 
 You can add up to 16 different secret values to be substituted in this way.
 
@@ -76,6 +82,8 @@ If you wish to provide more direct feedback then enable the [Rejection Reasons](
 ```
 approov policy -setRejectionReasons on
 ```
+
+> Note that this command requires an [admin role](https://approov.io/docs/latest/approov-usage-documentation/#account-access-roles).
 
 You will then be able to use `getRejectionReasons()` on an `ApproovRejectionException` to obtain a comma separated list of [device properties](https://approov.io/docs/latest/approov-usage-documentation/#device-properties) responsible for causing the rejection.
 
