@@ -68,7 +68,7 @@ approov registration -add app/build/outputs/apk/debug/app-debug.apk
 ```
 Note, on Windows you need to substitute \ for / in the above command.
 
-> **IMPORTANT:** The registration takes up to 30 seconds to propagate across the Approov Cloud Infrastructure, therefore don't try to run the app again before this time as elapsed. During development of your app you can ensure it [always passes](https://approov.io/docs/latest/approov-usage-documentation/#adding-a-device-security-policy) on your device to not have to register the APK each time you modify it.
+> **IMPORTANT:** The registration takes up to 30 seconds to propagate across the Approov Cloud Infrastructure, therefore don't try to run the app again before this time has elapsed. During development of your app you can ensure it [always passes](https://approov.io/docs/latest/approov-usage-documentation/#adding-a-device-security-policy) on your device to not have to register the APK each time you modify it.
 
 [Managing Registrations](https://approov.io/docs/latest/approov-usage-documentation/#managing-registrations) provides more details for app registrations, especially for releases to the Play Store. Note that you may also need to apply specific [Android Obfuscation](https://approov.io/docs/latest/approov-usage-documentation/#android-obfuscation) rules for your app when releasing it.
 
@@ -96,7 +96,7 @@ The quickstart also provides the following additional methods:
 ### Header Prefixes
 In some cases the value to be substituted on a header may be prefixed by some fixed string. A common case is the presence of `Bearer` included in an authorization header to indicate the use of a bearer token. In this case you can specify a prefix as follows:
 
-```
+```Java
 YourApp.approovService.addSubstitutionHeader("Authorization", "Bearer ");
 ```
 
@@ -105,15 +105,37 @@ This causes the `Bearer` prefix to be stripped before doing the lookup for the s
 ### App Instance Secure Strings
 As shown, it is possible to set predefined secret strings that are only communicated to passing apps. It is also possible to get and set secure string values for each app instance. These are never communicated to the Approov cloud service, but are encrypted at rest using keys which can only be retrieved by passing apps.
 
-Use the the following method in `ApproovService`:
+Here is an example of using the required method in `ApproovService`:
 
-```
-public static String fetchSecureString(String key, String newDef) throws ApproovException
+```Java
+import io.approov.service.retrofit.ApproovException;
+import io.approov.service.retrofit.ApproovNetworkException;
+import io.approov.service.retrofit.ApproovRejectionException;
+
+...
+
+
+String key;
+String newDef;
+String secret;
+// define key and newDef here
+try {
+    secret = YourApp.approovService.fetchSecureString(key, newDef);
+}
+catch(ApproovRejectionException e) {
+    // failure due to the attestation being rejected, e.getARC() and e.getRejectionReasons() may be used to present information to the user
+    // (note e.getRejectionReasons() is only available if the feature is enabled, otherwise it is always an empty string)
+}
+catch(ApproovNetworkException e) {
+    // failure due to a potentially temporary networking issue, allow for a user initiated retry
+}
+catch(ApproovException e) {
+   // a more permanent error, see e.message
+}
+// use `secret` as required, but never cache or store its value - note `secret` will be null if the provided key is not defined
 ```
 
 to lookup a secure string with the given `key`, returning `null` if it is not defined. Note that you should never cache this value in your code. Approov does the caching for you in a secure way. You may define a new value for the `key` by passing a new value in `newDef` rather than `null`. An empty string `newDef` is used to delete the secure string.
-
-Note that this method may make networking calls so should never be called from the main UI thread. The call may also fail with an `ApproovException`. If this is of type `ApproovNetworkException` then a retry should be performed as the issue is temporary and network related. If `ApproovRejectionException` is thrown then the app has not passed Approov attestation and some user feedback should be provided.
 
 This method is also useful for providing runtime secrets protection when the values are not passed on headers. Secure strings set using this method may also be looked up using subsequent networking interceptor header substitutions. 
 
@@ -125,3 +147,31 @@ YourApp.approovService.prefetch()
 ```
 
 This initiates the process of fetching the required information as a background task, so that it is available immediately when subsequently needed. Note the information will automatically expire after approximately 5 minutes.
+
+### Prechecking
+You may wish to do an early check in your to present a warning to the user if the app is not going to be able to access secrets because it fails the attestation process. Here is an example of calling the appropriate method in `ApproovService`:
+
+```Java
+import io.approov.service.retrofit.ApproovException;
+import io.approov.service.retrofit.ApproovNetworkException;
+import io.approov.service.retrofit.ApproovRejectionException;
+
+...
+
+try {
+    YourApp.approovService.precheck();
+}
+catch(ApproovRejectionException e) {
+    // failure due to the attestation being rejected, e.getARC() and e.getRejectionReasons() may be used to present information to the user
+    // (note e.getRejectionReasons() is only available if the feature is enabled, otherwise it is always an empty string)
+}
+catch(ApproovNetworkException e) {
+    // failure due to a potentially temporary networking issue, allow for a user initiated retry
+}
+catch(ApproovException e) {
+   // a more permanent error, see e.message
+}
+// app has passed the precheck
+```
+
+> Note you should NEVER use this as the only form of protection in your app, this is simply to provide an early indication of failure to your users as a convenience. You must always also have secrets essential to the operation of your app, or access to backend API services, protected with Approov. This is because, although the test itself is heavily secured, it may be possible for an attacker to bypass its result or prevent it being called at all. When the app is dependent on the secrets protected, it is not possible for them to be obtained at all without passing the attestation.
