@@ -25,8 +25,9 @@ android {
         }
     }
     packagingOptions {
-        exclude "META-INF/notice.txt"
-        exclude "META-INF/license.txt"
+        resources {
+            excludes += ['META-INF/notice.txt', 'META-INF/license.txt']
+        }
     }
 }
 
