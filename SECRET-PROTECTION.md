@@ -60,6 +60,14 @@ With this in place the Approov interceptor should replace the `<secret-placehold
 
 Since earlier released versions of the app may have already leaked the `<secret-value>`, you may wish to refresh the secret at some later point when any older version of the app is no longer in use. You can of course do this update over-the-air using Approov without any need to modify the app.
 
+If the secret value is provided as a parameter in a URL query string with the name `<secret-param>` then it is necessary to notify the `ApproovService` that the query parameter is subject to substitution. You do this by making the call once, after initialization:
+
+```Java
+YourApp.approovService.addSubstitutionQueryParam("<secret-param>");
+```
+
+With this in place the Approov interceptor should replace any query parameter `<secret-param>` with the value `<secret-placeholder>` with the `<secret-value>`, if the app passes attestation. For example, if you have a URL of the form `https://mydomain.com/endpoint?api-key=api-key-placeholder` then you should call `YourApp.approovService.addSubstitutionQueryParam("api-key")` to ensure that, for any `api-key` parameter, if there is a secure string with the name `api-key-placeholder` then the query parameter value will be replaced with the secure string value before making the API request.
+
 ## REGISTERING APPS
 In order for Approov to recognize the app as being valid it needs to be registered with the service. Change the directory to the top level of your app project and then register the app with Approov:
 
@@ -113,7 +121,6 @@ import io.approov.service.retrofit.ApproovNetworkException;
 import io.approov.service.retrofit.ApproovRejectionException;
 
 ...
-
 
 String key;
 String newDef;
@@ -174,4 +181,4 @@ catch(ApproovException e) {
 // app has passed the precheck
 ```
 
-> Note you should NEVER use this as the only form of protection in your app, this is simply to provide an early indication of failure to your users as a convenience. You must always also have secrets essential to the operation of your app, or access to backend API services, protected with Approov. This is because, although the test itself is heavily secured, it may be possible for an attacker to bypass its result or prevent it being called at all. When the app is dependent on the secrets protected, it is not possible for them to be obtained at all without passing the attestation.
+> Note you should NEVER use this as the only form of protection in your app, this is simply to provide an early indication of failure to your users as a convenience. You must always also have secrets essential to the operation of your app, or access to backend API services, protected with Approov. This is because, although the Approov attestation itself is heavily secured, it may be possible for an attacker to bypass its result or prevent it being called at all. When the app is dependent on the secrets protected, it is not possible for them to be obtained at all without passing the attestation.

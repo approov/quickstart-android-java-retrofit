@@ -25,7 +25,7 @@ Secondly, add the dependency in your app's `build.gradle`:
 
 ```
 dependencies {
-	implementation 'com.github.approov:approov-service-retrofit:3.0.2'
+	implementation 'com.github.approov:approov-service-retrofit:3.0.3'
 }
 ```
 
@@ -67,6 +67,8 @@ public class YourApp extends Application {
 The `<enter-your-config-string-here>` is a custom string that configures your Approov account access. This will have been provided in your Approov onboarding email.
 
 This initializes Approov when the app is first created. A `public static` member allows other parts of the app to access the singleton Approov instance. All calls to `ApproovService` and the SDK itself are thread safe.
+
+It is possible to pass an empty string to indicate that no initialization is required. Only do this if you are also using a different Approov quickstart in your app (which will use the same underlying Approov SDK) and this will have been initialized first.
 
 ## USING APPROOV SERVICE
 You can then modify your code that obtains a `RetrofitInstance` to make API calls as follows:
