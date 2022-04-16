@@ -66,7 +66,7 @@ If the secret value is provided as a parameter in a URL query string with the na
 YourApp.approovService.addSubstitutionQueryParam("<secret-param>");
 ```
 
-With this in place the Approov interceptor should replace any query parameter `<secret-param>` with the value `<secret-placeholder>` with the `<secret-value>`, if the app passes attestation. For example, if you have a URL of the form `https://mydomain.com/endpoint?api-key=api-key-placeholder` then you should call `YourApp.approovService.addSubstitutionQueryParam("api-key")` to ensure that, for any `api-key` parameter, if there is a secure string with the name `api-key-placeholder` then the query parameter value will be replaced with the secure string value before making the API request.
+After this the Approov interceptor should transform any instance of a URL such as `https://mydomain.com/endpoint?<secret-param>=<secret-placeholder>` into `https://mydomain.com/endpoint?<secret-param>=<secret-value>`, if the app passes attestation and there is a secure string with the name `<secret-placeholder>`.
 
 ## REGISTERING APPS
 In order for Approov to recognize the app as being valid it needs to be registered with the service. Change the directory to the top level of your app project and then register the app with Approov:
