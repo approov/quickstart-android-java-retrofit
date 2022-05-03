@@ -148,7 +148,7 @@ This method is also useful for providing runtime secrets protection when the val
 If you wish to reduce the latency associated with substituting the first secret, then make this call immediately after creating `ApproovService`:
 
 ```Java
-ApproovService.prefetch()
+ApproovService.prefetch();
 ```
 
 This initiates the process of fetching the required information as a background task, so that it is available immediately when subsequently needed. Note the information will automatically expire after approximately 5 minutes.
