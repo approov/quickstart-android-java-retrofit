@@ -45,7 +45,7 @@ The following app permissions need to be available in the manifest to use Approo
 
 Note that the minimum SDK version you can use with the Approov package is 21 (Android 5.0). 
 
-Please [read this](https://approov.io/docs/latest/approov-usage-documentation/#targetting-android-11-and-above) section of the reference documentation if targetting Android 11 (API level 30) or above.
+Please [read this](https://approov.io/docs/latest/approov-usage-documentation/#targeting-android-11-and-above) section of the reference documentation if targeting Android 11 (API level 30) or above.
 
 ## INITIALIZING APPROOV SERVICE
 In order to use the `ApproovService` you must initialize it when your app is created, usually in the `onCreate` method:
