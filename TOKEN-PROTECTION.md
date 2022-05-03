@@ -29,13 +29,11 @@ Note, on Windows you need to substitute \ for / in the above command.
 
 See [Getting Started With Approov](https://approov.io/docs/latest/approov-usage-documentation/#getting-started-with-approov) for information about additional Approov features you may wish to try.
 
-The quickstart also provides the following additional methods:
-
 ### Changing Approov Token Header Name
 The default header name of `Approov-Token` can be changed as follows:
 
 ```Java
-YourApp.approovService.setApproovHeader("Authorization", "Bearer ")
+ApproovService.setApproovHeader("Authorization", "Bearer ")
 ```
 
 The first parameter is the new header name and the second a prefix to be added to the Approov token. This is primarily for integrations where the Approov Token JWT might need to be prefixed with `Bearer` and passed in the `Authorization` header.
@@ -44,7 +42,7 @@ The first parameter is the new header name and the second a prefix to be added t
 If want to use [Token Binding](https://approov.io/docs/latest/approov-usage-documentation/#token-binding) then set the header holding the value to be used for binding as follows:
 
 ```Java
-YourApp.approovService.setBindingHeader("Authorization")
+ApproovService.setBindingHeader("Authorization")
 ```
 
 In this case it means that the value of `Authorization` holds the token value to be bound. This only needs to be called once. On subsequent requests the value of the specified header is read and its value set as the token binding value. Note that you should select a header whose value does not typically change from request to request, as each change requires a new Approov token to be fetched.
@@ -53,7 +51,7 @@ In this case it means that the value of `Authorization` holds the token value to
 If you wish to reduce the latency associated with fetching the first Approov token, then make this call immediately after creating `ApproovService`:
 
 ```Java
-YourApp.approovService.prefetch()
+ApproovService.prefetch()
 ```
 
 This initiates the process of fetching an Approov token as a background task, so that a cached token is available immediately when subsequently needed, or at least the fetch time is reduced. Note that there is no point in performing a prefetch if you are using token binding.
@@ -77,7 +75,7 @@ import io.approov.service.retrofit.ApproovRejectionException;
 ...
 
 try {
-    YourApp.approovService.precheck();
+    ApproovService.precheck();
 }
 catch(ApproovRejectionException e) {
     // failure due to the attestation being rejected, e.getARC() and e.getRejectionReasons() may be used to present information to the user
@@ -87,7 +85,7 @@ catch(ApproovNetworkException e) {
     // failure due to a potentially temporary networking issue, allow for a user initiated retry
 }
 catch(ApproovException e) {
-   // a more permanent error, see e.message
+   // a more permanent error, see e.getMessage()
 }
 // app has passed the precheck
 ```

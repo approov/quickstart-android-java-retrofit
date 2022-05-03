@@ -51,7 +51,7 @@ The `approov-service-retrofit` dependency needs to be added as follows to the `a
 Note that in this case the dependency has been added with the tag `main-SNAPSHOT`. We recommend you add a dependency to a specific version:
 
 ```
-implementation 'com.github.approov:approov-service-retrofit:3.0.3'
+implementation 'com.github.approov:approov-service-retrofit:3.0.5'
 ```
 
 Make sure you do a Gradle sync (by selecting `Sync Now` in the banner at the top of the modified `.gradle` file) after making these changes.
@@ -72,15 +72,15 @@ Uncomment the three lines of Approov initialization code in `io/approov/shapes/S
 
 ![Approov Initialization](readme-images/approov-init-code.png)
 
-This initializes Approov when the app is first created. It uses the configuration string we set earlier. A `public static` member allows other parts of the app to access the singleton Approov instance. All calls to `ApproovService` and the SDK itself are thread safe.
+This initializes Approov when the app is first created. It uses the configuration string we set earlier.
 
-The Approov SDK needs a configuration string to identify the account associated with the app. It will have been provided in the Approov onboarding email (it will be something like `#123456#K/XPlLtfcwnWkzv99Wj5VmAxo4CrU267J1KlQyoz8Qo=`). Copy this into `io/approov/shapes/ShapesApp.java:35`, replacing the text `<enter-your-config-string-here>`.
+The Approov SDK needs a configuration string to identify the account associated with the app. It will have been provided in the Approov onboarding email (it will be something like `#123456#K/XPlLtfcwnWkzv99Wj5VmAxo4CrU267J1KlQyoz8Qo=`). Copy this into `io/approov/shapes/ShapesApp.java`, replacing the text `<enter-your-config-string-here>`.
 
-Next we need to use Approov when we create a retrofit instance to access shapes. We change the lazy constructor for the instance at `io/approov/shapes/ShapesClientInstance.java:40`:
+Next we need to use Approov when we create a retrofit instance to access shapes. We change the lazy constructor for the instance at `io/approov/shapes/ShapesClientInstance.java`:
 
 ![Approov Addition](readme-images/approov-fetch.png)
 
-> **NOTE:** Don't forget to comment out the previous block of code.
+> **NOTE:** Don't forget to comment out the previous block of code, and also to uncomment the required `import` statement.
 
 Instead of constructing the `Retrofit` object lazily here we construct the builder for it instead and provide that to the `ApproovService`. It maintains a cache of `Retrofit` objects constructed with different builders. Thus there may be many retrofit construction classes in your app (likely with different base URLs) that can all use the same underlying `ApproovService` singleton.
 
@@ -151,7 +151,7 @@ approov secstrings -addKey shapes_api_key_placeholder -predefinedValue yXClypapW
 
 > Note that this command also requires an [admin role](https://approov.io/docs/latest/approov-usage-documentation/#account-access-roles).
 
-Next we need to inform Approov that it needs to substitute the placeholder value for the real API key on the `Api-Key` header. Only a single line of code needs to be changed at `io/approov/shapes/ShapesClientInstance.java:68`:
+Next we need to inform Approov that it needs to substitute the placeholder value for the real API key on the `Api-Key` header. Only a single line of code needs to be changed at `io/approov/shapes/ShapesClientInstance.java`:
 
 ![Approov Substitute Header](readme-images/approov-subs-header.png)
 
