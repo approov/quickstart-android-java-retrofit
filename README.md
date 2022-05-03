@@ -57,7 +57,7 @@ public class YourApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        ApproovService.iniitalize(getApplicationContext(), "<enter-your-config-string-here>");
+        ApproovService.initialize(getApplicationContext(), "<enter-your-config-string-here>");
     }
 }
 ```
