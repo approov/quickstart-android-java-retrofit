@@ -103,7 +103,7 @@ Note, on Windows you need to substitute \ for / in the above command.
 
 > **IMPORTANT:** The registration takes up to 30 seconds to propagate across the Approov Cloud Infrastructure, therefore don't try to run the app again before this time has elapsed. During development of your app you can ensure your device [always passes](https://approov.io/docs/latest/approov-usage-documentation/#adding-a-device-security-policy) so you do not have to register the APK each time you modify it.
 
-## SHAPES APP WITH APPROOV TOKEN PROTECTION
+## SHAPES APP WITH APPROOV API PROTECTION
 
 Run the app again without making any changes to the app and press the `Get Shape` button. You should now see this (or another shape):
 
@@ -125,7 +125,7 @@ If you still don't get a valid shape then there are some things you can try. Rem
 * Use `approov metrics` to see [Live Metrics](https://approov.io/docs/latest/approov-usage-documentation/#live-metrics) of the cause of failure.
 * You can use a debugger or emulator and get valid Approov tokens on a specific device by ensuring it [always passes](https://approov.io/docs/latest/approov-usage-documentation/#adding-a-device-security-policy). As a shortcut, when you are first setting up, you can add a [device security policy](https://approov.io/docs/latest/approov-usage-documentation/#adding-a-device-security-policy) using the `latest` shortcut as discussed so that the `device ID` doesn't need to be extracted from the logs or an Approov token.
 
-## SHAPES APP WITH SECRET PROTECTION
+## SHAPES APP WITH SECRETS PROTECTION
 
 This section provides an illustration of an alternative option for Approov protection if you are not able to modify the backend to add an Approov Token check. Firstly, revert any previous change to `ShapesService.java` so that it uses `https://shapes.approov.io/v1/shapes/`. This endpoiint simply checks for an API key:
 

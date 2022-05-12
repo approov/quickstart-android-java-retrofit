@@ -24,9 +24,9 @@ import retrofit2.http.GET;
 import retrofit2.http.HeaderMap;
 
 public interface ShapesService {
-    // *** COMMENT THE LINES BELOW WHEN USING APPROOV WITH TOKEN PROTECTION ***
+    // *** COMMENT THE LINES BELOW WHEN USING APPROOV WITH API PROTECTION ***
     @GET("/v1/shapes")
-    // *** UNCOMMENT THE LINES BELOW WHEN USING APPROOV WITH TOKEN PROTECTION ***
+    // *** UNCOMMENT THE LINES BELOW WHEN USING APPROOV WITH API PROTECTION ***
     //@GET("/v3/shapes")
     Call<ShapeModel> getShape(@HeaderMap Map<String, String> headers);
 

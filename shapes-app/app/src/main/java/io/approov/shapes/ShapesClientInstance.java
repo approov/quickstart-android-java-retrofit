@@ -47,7 +47,7 @@ public class ShapesClientInstance {
                     .addConverterFactory(GsonConverterFactory.create());
         }
 
-        // *** UNCOMMENT THE LINE BELOW FOR APPROOV USING SECRET PROTECTION ***
+        // *** UNCOMMENT THE LINE BELOW FOR APPROOV USING SECRETS PROTECTION ***
         //ApproovService.addSubstitutionHeader("Api-Key", null);
 
         return ApproovService.getRetrofit(retrofitBuilder);
