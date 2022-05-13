@@ -20,6 +20,8 @@ void initialize(Context context, String config)
 
 The [application context](https://developer.android.com/reference/android/content/Context#getApplicationContext()) must be provided using the `context` parameter.
 
+It is possible to pass an empty `config` string to indicate that no initialization is required. Only do this if you are also using a different Approov quickstart in your app (which will use the same underlying Approov SDK) and this will have been initialized first.
+
 ## GetRetrofit
 Gets the `Retrofit` instance that enables the Approov service, given a `builder` for it. This adds the Approov token in a header to requests, performs and header or query parameter substitutions and also pins the connections. You *MUST* always obtain the `Retrofit` instance using this method for all requests, to ensure an up to date client is used with the latest dynamic pins.
 
