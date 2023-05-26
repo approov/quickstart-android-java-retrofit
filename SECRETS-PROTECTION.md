@@ -1,7 +1,5 @@
 # Secrets Protection
-You should use this option if you wish to protect access to 3rd party or managed APIs where you are not able to add an Approov token check to the backend. This allows client secrets, or API keys, used for access to be protected with Approov. Rather than build secrets into an app where they might be reverse engineered, they are only provided at runtime by Approov for apps that pass attestation. This substantially improves your protection and prevents these secrets being abused by attackers. Where you are able to modify the backend we recommend you use API Protection for further enhanced flexibility and security.
-
-This quickstart provides straightforward implementation if the secret is currently supplied in a request header to the API. The quickstart interceptor is able to automatically rewrite headers as the requests are being made, to automatically substitute in the secret, but only if the app has passed the Approov attestation checks. If the app fails its checks then you can add a custom [rejection](#handling-rejections) handler.
+You should use this option if you wish to protect app secrets, including API keys. Rather than build secrets into an app, where they might be reverse engineered, they are only provided at runtime by Approov for apps that pass attestation. This substantially improves your protection and prevents these secrets being abused by attackers.
 
 These additional steps require access to the [Approov CLI](https://approov.io/docs/latest/approov-cli-tool-reference/), please follow the [Installation](https://approov.io/docs/latest/approov-installation/) instructions.
 
@@ -19,7 +17,7 @@ approov pin -setManagedTrustRoots on
 This ensures connections may only use official certificates, and blocks the use of self signed certificates that might be used by a Man-in-the-Middle (MitM) attacker.
 
 ## ADDING API DOMAINS
-In order for secrets to be protected for particular API domains it is necessary to inform Approov about them. Execute the following command:
+In order for secrets or API keys to be protected when being transmitted externally by the app, it is necessary to inform Approov about the domains on which they may be sent. Execute the following command:
 
 ```
 approov api -add your.domain -noApproovToken
@@ -33,34 +31,34 @@ It is assumed that you already have some client secrets and/or API keys in your 
 ```
 approov secstrings -setEnabled
 ```
-
 > Note that this command requires an [admin role](https://approov.io/docs/latest/approov-usage-documentation/#account-access-roles).
 
-The quickstart integration works by allowing you to replace the secret in your app with a placeholder value instead, and then the placeholder value is mapped to the actual secret value on the fly by the interceptor (if the app passes Approov attestation). The shipped app code will only contain the placeholder values.
-
-If your app currently uses `your-secret` then replace it in your app with the value `your-placeholder`. Choose a suitable placeholder name to reflect the type of the secret.
-
-You must inform Approov that it should substitute `your-placeholder` with `your-secret` in requests as follows:
+You must inform Approov what the value of each secret is as follows:
 
 ```
-approov secstrings -addKey your-placeholder -predefinedValue your-secret
+approov secstrings -addKey your-secret-name -predefinedValue your-secret-value
 ```
 
 > Note that this command also requires an [admin role](https://approov.io/docs/latest/approov-usage-documentation/#account-access-roles).
 
-You can add up to 16 different secret values to be substituted in this way.
+These values can be changed at any time and will propagate within 5 minutes to all running instances of your apps. Since earlier released versions of the app may have already leaked `your-secret-value`, you may wish to refresh the secret at some later point when any older version of the app is no longer in use. You can of course do this update over-the-air using Approov without any need to modify the app.
 
-If the secret value is provided on the header `your-header` then it is necessary to notify the `ApproovService` that the header is subject to substitution. You do this by making the call once, after initialization:
+You can define up to 16 different secret values in this way.
+
+## SUBSTITUTING THE SECRET AUTOMATICALLY
+If the secret is presented in an API header or query parameter, and you are able to use the `ApproovService` networking stack, then Approov can automatically substitute the secret value at runtime. You should use this method wherever possible.
+
+If the published code of your app currently uses `your-secret-value` then replace it with the value `your-secret-name`. This provides a placeholder value which can then be automatically substituted with the actual secret value at runtime, for validly attesting apps. The shipped app code will only contain the placeholder values.
+
+If the secret value needs to be provided on the header `your-header` then it is necessary to notify the `ApproovService` that the header is subject to substitution. You do this by making the call once, after initialization:
 
 ```Java
 ApproovService.addSubstitutionHeader("your-header", null);
 ```
 
-With this in place the Approov interceptor should replace the `your-placeholder` with `your-secret` as required when the app passes attestation. Since the mapping lookup is performed on the placeholder value you have the flexibility of providing different secrets on different API calls, even if they are passed with the same header name.
+With this in place the Approov networking interceptor should replace the `your-secret-name` with `your-secret-value` as required when the app passes attestation. Since the mapping lookup is performed on the secret name you have the flexibility of providing different secrets on different API calls, even if they are passed with the same header name.
 
 You can see a [worked example](https://github.com/approov/quickstart-android-java-retrofit/blob/master/SHAPES-EXAMPLE.md#shapes-app-with-secrets-protection) for the Shapes app.
-
-Since earlier released versions of the app may have already leaked `your-secret`, you may wish to refresh the secret at some later point when any older version of the app is no longer in use. You can of course do this update over-the-air using Approov without any need to modify the app.
 
 If the secret value is provided as a parameter in a URL query string with the name `your-param` then it is necessary to notify the `ApproovService` that the query parameter is subject to substitution. You do this by making the call once, after initialization:
 
@@ -68,22 +66,41 @@ If the secret value is provided as a parameter in a URL query string with the na
 ApproovService.addSubstitutionQueryParam("your-param");
 ```
 
-After this the Approov interceptor should transform any instance of a URL such as `https://your.domain/endpoint?your-param=your-placeholder` into `https://your.domain/endpoint?your-param=your-secret`.
+After this the Approov networking interceptor should transform any instance of a URL such as `https://your.domain/endpoint?your-param=your-secret-name` into `https://your.domain/endpoint?your-param=your-secret-value`.
 
-## REGISTERING APPS
-In order for Approov to recognize the app as being valid it needs to be registered with the service. Change the directory to the top level of your app project and then register the app with Approov:
+## OBTAINING THE SECRET EXPLICITLY
+In some cases it might not be possible to automatically substitute a secret in a header or query parameter. This might be because the secret is used in other ways in your application.
 
+In this case it is possible to make an explicit call at runtime to obtain the secret value, for apps passing attestation. Here is an example for using the required method in `ApproovService`:
+
+```Java
+import io.approov.service.okhttp.ApproovException;
+import io.approov.service.okhttp.ApproovNetworkException;
+import io.approov.service.okhttp.ApproovRejectionException;
+
+...
+
+
+String secret;
+try {
+    secret = ApproovService.fetchSecureString("your-secret-name", null);
+}
+catch(ApproovRejectionException e) {
+    // failure due to the attestation being rejected, e.getARC() and e.getRejectionReasons() may be used to
+    // present information to the user (note e.getRejectionReasons() is only available if the feature is
+    // enabled, otherwise it is always an empty string)
+}
+catch(ApproovNetworkException e) {
+    // failure due to a potentially temporary networking issue, allow for a user initiated retry
+}
+catch(ApproovException e) {
+   // a more permanent error, see e.getMessage()
+}
+// use `secret` as required, but never cache or store its value - note `secret` will be null if the provided
+// secret name is not defined
 ```
-approov registration -add app/build/outputs/apk/debug/app-debug.apk
-```
 
-Note, some versions of Android Studio save the app in `app/build/intermediates/apk/debug/app-debug.apk`.
-
-Note, on Windows you need to substitute \ for / in the above command.
-
-> **IMPORTANT:** The registration takes up to 30 seconds to propagate across the Approov Cloud Infrastructure, therefore don't try to run the app again before this time has elapsed. During development of your app you can ensure it [always passes](https://approov.io/docs/latest/approov-usage-documentation/#adding-a-device-security-policy) on your device to not have to register the APK each time you modify it.
-
-[Managing Registrations](https://approov.io/docs/latest/approov-usage-documentation/#managing-registrations) provides more details for app registrations, especially for releases to the Play Store. Note that you may also need to apply specific [Android Obfuscation](https://approov.io/docs/latest/approov-usage-documentation/#android-obfuscation) rules for your app when releasing it.
+> **IMPORTANT:** The secrets obtained should only ever be communicated externally from the app over channels using the Approov networking stack and which have been added as protected API domains. If not then it is possible for them to be intercepted by a Man-in-the-Middle (MitM) attack.
 
 ## HANDLING REJECTIONS
 If the app is not recognized as being valid by Approov then an `ApproovRejectionException` is thrown on the request and the API call is not completed. The secret value will never be communicated to the app in this case.
@@ -100,6 +117,21 @@ approov policy -setRejectionReasons on
 
 You will then be able to use `getRejectionReasons()` on an `ApproovRejectionException` to obtain a comma separated list of [device properties](https://approov.io/docs/latest/approov-usage-documentation/#device-properties) responsible for causing the rejection.
 
+## REGISTERING APPS
+In order for Approov to recognize the app as being valid it needs to be registered with the service. Change the directory to the top level of your app project and then register the app with Approov:
+
+```
+approov registration -add app/build/outputs/apk/debug/app-debug.apk
+```
+
+Note, some versions of Android Studio save the app in `app/build/intermediates/apk/debug/app-debug.apk`.
+
+Note, on Windows you need to substitute \ for / in the above command.
+
+> **IMPORTANT:** The registration takes up to 30 seconds to propagate across the Approov Cloud Infrastructure, therefore don't try to run the app again before this time has elapsed. During development of your app you can ensure it [always passes](https://approov.io/docs/latest/approov-usage-documentation/#adding-a-device-security-policy) on your device to not have to register the APK each time you modify it.
+
+[Managing Registrations](https://approov.io/docs/latest/approov-usage-documentation/#managing-registrations) provides more details for app registrations, especially for releases to the Play Store. Note that you may also need to apply specific [Android Obfuscation](https://approov.io/docs/latest/approov-usage-documentation/#android-obfuscation) rules for your app when releasing it.
+
 ## FURTHER OPTIONS
 See [Exploring Other Approov Features](https://approov.io/docs/latest/approov-usage-documentation/#exploring-other-approov-features) for information about additional Approov features you may wish to try.
 
@@ -113,40 +145,9 @@ ApproovService.addSubstitutionHeader("Authorization", "Bearer ");
 This causes the `Bearer` prefix to be stripped before doing the lookup for the substitution, and the `Bearer` prefix added to the actual secret value as part of the substitution.
 
 ### App Instance Secure Strings
-As shown, it is possible to set predefined secret strings that are only communicated to passing apps. It is also possible to get and set secure string values for each app instance. These are never communicated to the Approov cloud service, but are encrypted at rest using keys which can only be retrieved by passing apps.
+In addition to secret values defined in the Approov cloud, it is also possible to get and set secure string values independently for each app instance. These are never communicated to the Approov cloud service, but are encrypted at rest using keys which can only be retrieved by passing apps. You can use this feature to protect user authorization tokens issued to individual apps or other sensitive customer data, for instance.
 
-Here is an example of using the required method in `ApproovService`:
-
-```Java
-import io.approov.service.retrofit.ApproovException;
-import io.approov.service.retrofit.ApproovNetworkException;
-import io.approov.service.retrofit.ApproovRejectionException;
-
-...
-
-String key;
-String newDef;
-String secret;
-// define key and newDef here
-try {
-    secret = ApproovService.fetchSecureString(key, newDef);
-}
-catch(ApproovRejectionException e) {
-    // failure due to the attestation being rejected, e.getARC() and e.getRejectionReasons() may be used to present information to the user
-    // (note e.getRejectionReasons() is only available if the feature is enabled, otherwise it is always an empty string)
-}
-catch(ApproovNetworkException e) {
-    // failure due to a potentially temporary networking issue, allow for a user initiated retry
-}
-catch(ApproovException e) {
-   // a more permanent error, see e.getMessage()
-}
-// use `secret` as required, but never cache or store its value - note `secret` will be null if the provided key is not defined
-```
-
-to lookup a secure string with the given `key`, returning `null` if it is not defined. Note that you should never cache this value in your code. Approov does the caching for you in a secure way. You may define a new value for the `key` by passing a new value in `newDef` rather than `null`. An empty string `newDef` is used to delete the secure string.
-
-This method is also useful for providing runtime secrets protection when the values are not passed on headers. Secure strings set using this method may also be looked up using subsequent networking interceptor header substitutions. 
+App instance secure strings can be set and retrived using the [secret fetching code](#obtaining-the-secret-explicitly). You can define a new value for a given secret name by passing a value in the second parameter of `fetchSecureString`, rather than `null`. An empty string may be used to delete the secure string completely.
 
 ### Prefetching
 If you wish to reduce the latency associated with substituting the first secret, then make this call immediately after initializing `ApproovService`:
@@ -171,8 +172,9 @@ try {
     ApproovService.precheck();
 }
 catch(ApproovRejectionException e) {
-    // failure due to the attestation being rejected, e.getARC() and e.getRejectionReasons() may be used to present information to the user
-    // (note e.getRejectionReasons() is only available if the feature is enabled, otherwise it is always an empty string)
+    // failure due to the attestation being rejected, e.getARC() and e.getRejectionReasons() may be used
+    // to present information to the user (note e.getRejectionReasons() is only available if the feature
+    // is enabled, otherwise it is always an empty string)
 }
 catch(ApproovNetworkException e) {
     // failure due to a potentially temporary networking issue, allow for a user initiated retry
