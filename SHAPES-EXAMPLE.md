@@ -90,8 +90,6 @@ You should edit the `ShapesService.java` file to change to using the shapes `htt
 
 ![Shapes V3 Endpoint](readme-images/shapes-v3-endpoint.png)
 
-Run the app again to ensure that the `app-debug.apk` in the generated build outputs is up to date.
-
 ## ADD YOUR SIGNING CERTIFICATE TO APPROOV
 
 In order for Approov to recognize the app as being valid, the local certificate used to sign the app needs to be added to Approov. The following assumes it is in PKCS12 format:
@@ -106,7 +104,7 @@ This ensures that any app signed with the certificate used on your development m
 
 ## SHAPES APP WITH APPROOV API PROTECTION
 
-Run the app again without making any changes to the app and press the `Get Shape` button. You should now see this (or another shape):
+Run the app and press the `Get Shape` button. You should now see this (or another shape):
 
 <p>
     <img src="readme-images/shapes-good.png" width="256" title="Shapes Good">
