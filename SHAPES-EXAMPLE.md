@@ -92,19 +92,17 @@ You should edit the `ShapesService.java` file to change to using the shapes `htt
 
 Run the app again to ensure that the `app-debug.apk` in the generated build outputs is up to date.
 
-## REGISTER YOUR APP WITH APPROOV
+## ADD YOUR SIGNING CERTIFICATE TO APPROOV
 
-In order for Approov to recognize the app as being valid it needs to be registered with the service. Change directory to the top level of the `shapes-app` project and then register the app with Approov:
+In order for Approov to recognize the app as being valid, the local certificate used to sign the app needs to be added to Approov. The following assumes it is in PKCS12 format:
 
 ```
-approov registration -add app/build/outputs/apk/debug/app-debug.apk
+approov appsigncert -add ~/.android/debug.keystore -storePassword android -autoReg
 ```
 
-Note, some versions of Android Studio save the app in `app/build/intermediates/apk/debug/app-debug.apk`.
+This ensures that any app signed with the certificate used on your development machine will be recognized by Approov. See [Android App Signing Certificates](https://approov.io/docs/latest/approov-usage-documentation/#android-app-signing-certificates) if your keystore format is not recognized or if you have any issues adding the certificate.
 
-Note, on Windows you need to substitute \ for / in the above command.
-
-> **IMPORTANT:** The registration takes up to 30 seconds to propagate across the Approov Cloud Infrastructure, therefore don't try to run the app again before this time has elapsed. During development of your app you can ensure your device [always passes](https://approov.io/docs/latest/approov-usage-documentation/#adding-a-device-security-policy) so you do not have to register the APK each time you modify it.
+> **IMPORTANT:** The addition takes up to 30 seconds to propagate across the Approov Cloud Infrastructure so don't try to run the app again before this time has elapsed.
 
 ## SHAPES APP WITH APPROOV API PROTECTION
 
@@ -122,11 +120,10 @@ This means that the app is getting a validly signed Approov token to present to 
 
 If you still don't get a valid shape then there are some things you can try. Remember this may be because the device you are using has some characteristics that cause rejection for the currently set [Security Policy](https://approov.io/docs/latest/approov-usage-documentation/#security-policies) on your account:
 
-* Ensure that the version of the app you are running is exactly the one you registered with Approov. Also, if you are running the app from a debugger then valid tokens are not issued.
+* Ensure that the version of the app you are running is signed with the correct certificate.
 * Look at the [`logcat`](https://developer.android.com/studio/command-line/logcat) output from the device. Information about any Approov token fetched or an error is output at the `DEBUG` level. You can easily [check](https://approov.io/docs/latest/approov-usage-documentation/#loggable-tokens) the validity and find out any reason for a failure.
-* Consider using an [Annotation Policy](https://approov.io/docs/latest/approov-usage-documentation/#annotation-policies) during initial development to directly see why the device is not being issued with a valid token.
 * Use `approov metrics` to see [Live Metrics](https://approov.io/docs/latest/approov-usage-documentation/#live-metrics) of the cause of failure.
-* You can use a debugger or emulator and get valid Approov tokens on a specific device by ensuring it [always passes](https://approov.io/docs/latest/approov-usage-documentation/#adding-a-device-security-policy). As a shortcut, when you are first setting up, you can add a [device security policy](https://approov.io/docs/latest/approov-usage-documentation/#adding-a-device-security-policy) using the `latest` shortcut as discussed so that the `device ID` doesn't need to be extracted from the logs or an Approov token.
+* You can use a debugger or emulator and get valid Approov tokens if you [mark the signing certificate as being for development](https://approov.io/docs/latest/approov-usage-documentation/#development-app-signing-certificates).
 
 ## SHAPES APP WITH SECRETS PROTECTION
 
@@ -134,17 +131,9 @@ This section provides an illustration of an alternative option for Approov prote
 
 ![Shapes V1 Endpoint](readme-images/shapes-v1-endpoint.png)
 
-Next, the `res/values/strings.xml` file needs to be changed with the `shapes_api_key` entry modified to `shapes_api_key_placeholder`. Tis removss the actual API key out of the code:
+Next, the `res/values/strings.xml` file needs to be changed with the `shapes_api_key` entry modified to `shapes_api_key_placeholder`. This removes the actual API key out of the code:
 
 ![Placeholder API Key](readme-images/placeholder-api-key.png)
-
-Next we enable the [Secure Strings](https://approov.io/docs/latest/approov-usage-documentation/#secure-strings) feature:
-
-```
-approov secstrings -setEnabled
-```
-
-> Note that this command requires an [admin role](https://approov.io/docs/latest/approov-usage-documentation/#account-access-roles).
 
 You must inform Approov that it should map `shapes_api_key_placeholder` to `yXClypapWNHIifHUWmBIyPFAm` (the actual API key) in requests as follows:
 
@@ -158,15 +147,10 @@ Next we need to inform Approov that it needs to substitute the placeholder value
 
 ![Approov Substitute Header](readme-images/approov-subs-header.png)
 
-Build and run the app again to ensure that the `app-debug.apk` in the generated build outputs is up to date. You need to register the updated app with Approov. Change directory to the top level of the `shapes-app` project and then register the app with:
-
-```
-approov registration -add app/build/outputs/apk/debug/app-debug.apk
-```
-Run the app again without making any changes to the app and press the `Get Shape` button. You should now see this (or another shape):
+Build and run the app again and press the `Get Shape` button. You should now see this (or another shape):
 
 <p>
     <img src="readme-images/shapes-good.png" width="256" title="Shapes Good">
 </p>
 
-This means that the registered app is able to access the API key, even though it is no longer embedded in the app configuration, and provide it to the shapes request.
+This means that the app is able to access the API key, even though it is no longer embedded in the app configuration, and provide it to the shapes request.
