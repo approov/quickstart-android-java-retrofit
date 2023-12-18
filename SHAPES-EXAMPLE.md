@@ -51,7 +51,7 @@ The `approov-service-retrofit` dependency needs to be added as follows to the `a
 Note that in this case the dependency has been added with the tag `main-SNAPSHOT`. We recommend you add a dependency to a specific version:
 
 ```
-implementation 'com.github.approov:approov-service-retrofit:3.1.0'
+implementation 'com.github.approov:approov-service-retrofit:3.2.0'
 ```
 
 Make sure you do a Gradle sync (by selecting `Sync Now` in the banner at the top of the modified `.gradle` file) after making these changes.
