@@ -36,22 +36,16 @@ This contacts `https://shapes.approov.io/v1/shapes` to get the name of a random 
 
 ## ADD THE APPROOV DEPENDENCY
 
-The Approov integration is available via [`jitpack`](https://jitpack.io). This allows inclusion into the project by simply specifying a dependency in the `gradle` files for the app. Firstly, `jitpack` needs to be added as follows to the end the `repositories` section in the `build.gradle:20` file at the top level of the project:
-
-```
-maven { url 'https://jitpack.io' }
-```
-
-![Project Build Gradle](readme-images/root-gradle.png)
+The Approov integration is available via [`maven`](https://mvnrepository.com/repos/central). This allows inclusion into the project by simply specifying a dependency in the `gradle` files for the app.
 
 The `approov-service-retrofit` dependency needs to be added as follows to the `app/build.gradle:38` at the app level:
 
 ![App Build Gradle](readme-images/app-gradle.png)
 
-Note that in this case the dependency has been added with the tag `main-SNAPSHOT`. We recommend you add a dependency to a specific version:
+The Maven dependency reference is:
 
 ```
-implementation 'com.github.approov:approov-service-retrofit:3.2.2'
+implementation("io.approov:service.retrofit:3.3.0")
 ```
 
 Make sure you do a Gradle sync (by selecting `Sync Now` in the banner at the top of the modified `.gradle` file) after making these changes.

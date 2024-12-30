@@ -7,26 +7,11 @@ This page provides all the steps for integrating Approov into your app. Addition
 To follow this guide you should have received an onboarding email for a trial or paid Approov account.
 
 ## ADDING APPROOV SERVICE DEPENDENCY
-The Approov integration is available via [`jitpack`](https://jitpack.io). This allows inclusion into the project by simply specifying a dependency in the `gradle` files for the app.
-
-Firstly, `jitpack` needs to be added to the end the `repositories` section in the `build.gradle` file at the top root level of the project:
-
-```
-allprojects {
-    repositories {
-        ...
-        maven { url 'https://jitpack.io' }
-    }
-}
-```
-
-Secondly, add the dependency in your app's `build.gradle`:
-
+The Approov integration is available via [`maven`](https://mvnrepository.com/repos/central). This allows inclusion into the project by simply specifying a dependency in the `gradle` files for the app.
+The `Maven` repository is already present in the gradle.build file so the only import you need to make is the actual service layer itself:
 
 ```
-dependencies {
-	implementation 'com.github.approov:approov-service-retrofit:3.2.2'
-}
+implementation("io.approov:service.retrofit:3.3.0")
 ```
 
 Make sure you do a Gradle sync (by selecting `Sync Now` in the banner at the top of the modified `.gradle` file) after making these changes.
