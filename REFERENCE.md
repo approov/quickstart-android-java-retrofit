@@ -22,6 +22,30 @@ The [application context](https://developer.android.com/reference/android/conten
 
 It is possible to pass an empty `config` string to indicate that no initialization is required. Only do this if you are also using a different Approov quickstart in your app (which will use the same underlying Approov SDK) and this will have been initialized first.
 
+An alternative initialization function allows to provide further options in the `comment` parameter. Please refer to the [Approov SDK documentation](https://approov.io/docs/latest/approov-direct-sdk-integration/#sdk-initialization-options) for details.
+
+```java
+void initialize(Context context, String config, String comment)
+```
+
+## SetApproovInterceptorExtensions
+
+Sets the interceptor extensions callback handler. This facility supports message signing that is independent from the rest of the attestation flow. The default ApproovService layer issues no callbacks. Provide a non-null handler to add functionality to the attestation flow. The configuration used to control installation message signing is passed in the `callbacks` parameter. The behavior of the provided configuration must remain constant while in use by the ApproovService.
+
+```java
+void setApproovInterceptorExtensions(ApproovInterceptorExtensions callbacks)
+```
+
+Provide an ApproovDefaultMessageSigning object instantiated as shown below to enable installation message signing:
+
+```java
+    ApproovService.setApproovInterceptorExtensions(
+        new ApproovDefaultMessageSigning().setDefaultFactory(
+            ApproovDefaultMessageSigning.generateDefaultSignatureParametersFactory()));
+```
+
+Passing `null` to this method will disable message signing.
+
 ## GetRetrofit
 Gets the `Retrofit` instance that enables the Approov service, given a `builder` for it. This adds the Approov token in a header to requests, performs and header or query parameter substitutions and also pins the connections. You *MUST* always obtain the `Retrofit` instance using this method for all requests, to ensure an up to date client is used with the latest dynamic pins.
 
@@ -156,13 +180,28 @@ String fetchToken(String url) throws ApproovException
 This throws `ApproovException` if there was a problem obtaining an Approov token. This may require network access so may take some time to complete, and should not be called from the UI thread.
 
 ## GetMessageSignature
-Gets the [message signature](https://approov.io/docs/latest/approov-usage-documentation/#message-signing) for the given `message`. This is returned as a base64 encoded signature. This feature uses an account specific message signing key that is transmitted to the SDK after a successful fetch if the facility is enabled for the account. Note that if the attestation failed then the signing key provided is actually random so that the signature will be incorrect. An Approov token should always be included in the message being signed and sent alongside this signature to prevent replay attacks.
-
+**DEPRECATED**, replaced by `getAccountMessageSignature`.
 ```Java
 String getMessageSignature(String message) throws ApproovException
 ```
 
+## GetAccountMessageSignature
+Gets the [account message signature](https://approov.io/docs/latest/approov-usage-documentation/#account-message-signing) for the given message. This is returned as a base64 encoded signature. This feature uses an account specific message signing key that is transmitted to the SDK after a successful fetch if the facility is enabled for the account. Note that if the attestation failed then the signing key provided is actually random so that the signature will be incorrect. An Approov token should always be included in the message being signed and sent alongside this signature to prevent replay attacks.
+
+```java
+String getAccountMessageSignature(String message) throws ApproovException
+```
+
 This throws `ApproovException` if there was a problem obtaining a signature.
+
+## GetInstallMessageSignature
+Gets the [install message signature](https://approov.io/docs/latest/approov-usage-documentation/#installation-message-signing) for the given message. This is returned as the base64 encoding of the signature in ASN.1 DER format. This feature uses an app install specific message signing key that is generated the first time an app launches. This signing mechanism uses an ECC key pair where the private key is managed by the secure element or trusted execution environment of the device. Where it can, Approov uses attested key pairs to perform the message signing. An Approov token should always be included in the message being signed and sent alongside this signature to prevent replay attacks.
+
+```java
+getInstallMessageSignature(String message) throws ApproovException
+```
+
+This throws `ApproovException` if no signature is available, because there has been no prior fetch or the feature is not enabled.
 
 ## FetchSecureString
 Fetches a [secure string](https://approov.io/docs/latest/approov-usage-documentation/#secure-strings) with the given `key` if `newDef` is `null`. Returns `null` if the `key` secure string is not defined. If `newDef` is not `null` then a secure string for the particular app instance may be defined. In this case the new value is returned as the secure string. Use of an empty string for `newDef` removes the string entry. Note that the returned string should NEVER be cached by your app, you should call this function when it is needed.

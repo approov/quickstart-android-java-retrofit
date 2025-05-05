@@ -8,7 +8,7 @@ This quickstart is written specifically for native Android apps that are written
 * [Android Studio](https://developer.android.com/studio) installed (Android Studio Bumblebee 2021.1.1 is used in this guide)
 * The contents of this repo
 
-## RUNNING THE SHAPES APP WITHOUT APPROOV
+## RUN THE SHAPES APP WITHOUT APPROOV
 
 Open the project in the `shapes-app` folder using `File->Open` in Android Studio. Run the app as follows:
 
@@ -118,13 +118,39 @@ If you still don't get a valid shape then there are some things you can try. Rem
 * You can use a debugger or emulator and get valid Approov tokens on a specific device by ensuring you are [forcing a device ID to pass](https://approov.io/docs/latest/approov-usage-documentation/#forcing-a-device-id-to-pass). As a shortcut, you can use the `latest` as discussed so that the `device ID` doesn't need to be extracted from the logs or an Approov token.
 * Also, you can use a debugger or Android emulator and get valid Approov tokens on any device if you [mark the signing certificate as being for development](https://approov.io/docs/latest/approov-usage-documentation/#development-app-signing-certificates).
 
+## SHAPES APP WITH INSTALLATION MESSAGE SIGNING
+
+This section shows how to add message signing as an additional layer of protection in addition to an Approov token.
+
+1. Edit the `ShapesService.java` file to using the shapes `https://shapes.approov.io/v5/shapes/` endpoint. The v5 endpoint performs a message signature check in addition to the Approov token check.
+
+![Shapes V5 Endpoint](readme-images/shapes-v5-endpoint.png)
+
+2. Uncomment the message signing setup code in `ShapesApp.java`. This adds an interceptor extension to the ApproovService which adds the message signature to the request automatically.
+
+![Add Interceptor Extension](readme-images/approov-msgsign-setup-code.png)
+
+3. Configure Approov to add the public message signing key to the approov token. This key is used by the v5 endpoint to perform its message signature check.
+
+```
+approov policy -setInstallPubKey on
+```
+
+4. Build and run the app again and press the `Get Shape` button. You should see this (or another shape):
+
+<p>
+    <img src="readme-images/shapes-good.png" width="256" title="Shapes Good">
+</p>
+
+This indicates that in addition to the app obtaining a validly signed Approov token, the message also has a valid signature.
+
 ## SHAPES APP WITH SECRETS PROTECTION
 
-This section provides an illustration of an alternative option for Approov protection if you are not able to modify the backend to add an Approov Token check. Firstly, revert any previous change to `ShapesService.java` so that it uses `https://shapes.approov.io/v1/shapes/`. This endpoiint simply checks for an API key:
+This section provides an illustration of an alternative option for Approov protection if you are not able to modify the backend to add an Approov Token check. Firstly, revert any previous change to `ShapesService.java` so that it uses `https://shapes.approov.io/v1/shapes/`. This endpoint simply checks for an API key:
 
 ![Shapes V1 Endpoint](readme-images/shapes-v1-endpoint.png)
 
-Next, the `res/values/strings.xml` file needs to be changed with the `shapes_api_key` entry modified to `shapes_api_key_placeholder`. This removes the actual API key out of the code:
+Next, the `res/values/strings.xml` file needs to be changed with the `shapes_api_key` entry modified to `shapes_api_key_placeholder`. This removes the actual API key from the code:
 
 ![Placeholder API Key](readme-images/placeholder-api-key.png)
 
