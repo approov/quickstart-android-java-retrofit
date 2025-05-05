@@ -26,6 +26,31 @@ This ensures that any app signed with the certificate used on your development m
 
 See [Android App Signing Certificates](https://approov.io/docs/latest/approov-usage-documentation/#android-app-signing-certificates) if your keystore format is not recognized or if you have any issues adding the certificate. This also provides information about adding certificates for when releasing to the Play Store. Note also that you need to apply specific [Android Obfuscation](https://approov.io/docs/latest/approov-usage-documentation/#android-obfuscation) rules when creating an app release.
 
+## MESSAGE SIGNING
+We provide [installation message signing](https://approov.io/docs/latest/approov-usage-documentation/#installation-message-signing) as an advanced option for situations where an additional level of integrity assurance is required. You should use this option if you would like to ensure strict message integrity between the client app and the backend API. The key pair for message signing is generated automatically when the SDK is first initialized. The public key is transmitted to the Approov servers to be included in Approov tokens in the `ipk` claim. The private key never leaves the device and is held in secure hardware (e.g. TEE/Secure Enclave) to prevent the key material from being stolen.
+
+### Enabling Installation Message Signing
+Installation message signing can be enabled by executing the following command:
+
+```shell
+approov policy -setInstallPubKey on
+```
+
+This causes the public key to be included in any Approov tokens in the `ipk` claim, the presence of which then indicates to the backend that it should expect a valid installation message signature and that this should be verified.
+
+### Adding the Message Signature Automatically
+If you are using the `ApproovService` networking stack, then Approov can automatically generate and add the message signature. You should use this method whenever possible. You enable this by making the following call once, after initialization:
+
+```java
+ApproovService.setApproovInterceptorExtensions(
+    new ApproovDefaultMessageSigning().setDefaultFactory(
+        ApproovDefaultMessageSigning.generateDefaultSignatureParametersFactory()));
+```
+
+With this interceptor extension in place the Approov networking interceptor computes the request message signature and adds it to the request as required when the app passes attestation.
+
+You can see a [worked example](https://github.com/approov/quickstart-android-java-retrofit/blob/master/SHAPES-EXAMPLE.md#shapes-app-with-installation-message-signing) for the Shapes app.
+
 ## FURTHER OPTIONS
 See [Exploring Other Approov Features](https://approov.io/docs/latest/approov-usage-documentation/#exploring-other-approov-features) for information about additional Approov features you may wish to try.
 
