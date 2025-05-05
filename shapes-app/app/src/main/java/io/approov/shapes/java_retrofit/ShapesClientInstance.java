@@ -15,20 +15,41 @@
 // ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
 // THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-package io.approov.shapes;
+package io.approov.shapes.java_retrofit;
 
-import android.app.Application;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 // *** UNCOMMENT THE LINE BELOW FOR APPROOV ***
 //import io.approov.service.retrofit.ApproovService;
 
+public class ShapesClientInstance {
+    private static final String BASE_URL = "https://shapes.approov.io/";
 
-public class ShapesApp extends Application {
-    @Override
-    public void onCreate() {
-        super.onCreate();
-
-        // *** UNCOMMENT THE LINE BELOW FOR APPROOV ***
-        //ApproovService.initialize(getApplicationContext(), "<enter-your-config-string-here>");
+    // *** COMMENT THE LINES BELOW WHEN USING APPROOV ***
+    private static Retrofit retrofit;
+    public static Retrofit getRetrofitInstance() {
+        if (retrofit == null) {
+            retrofit = new retrofit2.Retrofit.Builder()
+                    .baseUrl(BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+        }
+        return retrofit;
     }
+
+    // *** UNCOMMENT THE LINES BELOW FOR APPROOV ***
+    /*private static Retrofit.Builder retrofitBuilder;
+    public static Retrofit getRetrofitInstance() {
+        if (retrofitBuilder == null) {
+            retrofitBuilder = new retrofit2.Retrofit.Builder()
+                    .baseUrl(BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create());
+        }
+
+        // *** UNCOMMENT THE LINE BELOW FOR APPROOV USING SECRETS PROTECTION ***
+        //ApproovService.addSubstitutionHeader("Api-Key", null);
+
+        return ApproovService.getRetrofit(retrofitBuilder);
+    }*/
 }

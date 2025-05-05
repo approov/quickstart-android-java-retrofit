@@ -15,24 +15,23 @@
 // ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
 // THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-package io.approov.shapes;
+package io.approov.shapes.java_retrofit;
 
-import com.google.gson.annotations.SerializedName;
+import java.util.Map;
 
+import retrofit2.Call;
+import retrofit2.http.GET;
+import retrofit2.http.HeaderMap;
 
-public class ShapeModel {
-    @SerializedName("shape")
-    private String shape;
+public interface ShapesService {
+    // *** COMMENT THE LINES BELOW WHEN USING APPROOV WITH API PROTECTION ***
+    @GET("/v1/shapes")
+    // *** UNCOMMENT THE LINES BELOW WHEN USING APPROOV WITH API PROTECTION ***
+    //@GET("/v3/shapes")
+    // *** UNCOMMENT THE LINES BELOW WHEN USING APPROOV WITH INSTALLATION MESSAGE SIGNING ***
+    //@GET("/v5/shapes")
+    Call<ShapeModel> getShape(@HeaderMap Map<String, String> headers);
 
-    public ShapeModel(String shape) {
-        this.shape = shape;
-    }
-
-    public String getShape() {
-        return shape;
-    }
-
-    public void setShape(String shape) {
-        this.shape = shape;
-    }
+    @GET("/v1/hello")
+    Call<HelloModel> getHello();
 }

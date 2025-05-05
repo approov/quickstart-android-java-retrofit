@@ -11,7 +11,7 @@ The Approov integration is available via [`maven`](https://mvnrepository.com/rep
 The `Maven` repository is already present in the gradle.build file so the only import you need to make is the actual service layer itself:
 
 ```
-implementation("io.approov:service.retrofit:3.3.0")
+implementation("io.approov:service.retrofit:3.4.0")
 ```
 
 Make sure you do a Gradle sync (by selecting `Sync Now` in the banner at the top of the modified `.gradle` file) after making these changes.

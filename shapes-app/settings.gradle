@@ -1,1 +1,35 @@
+pluginManagement {
+    repositories {
+        google {
+            content {
+                includeGroupByRegex("com\\.android.*")
+                includeGroupByRegex("com\\.google.*")
+                includeGroupByRegex("androidx.*")
+            }
+        }
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+rootProject.name = "Approov Shapes Java-Retrofit"
 include ':app'
+
+// For local development of the Approov Service Retrofit library:
+// 1. Uncomment the includeBuild statement below. This assumes that this project (quickstart-android-java-retrofit) is in
+//    the same parent directory as the included project (approov-service-retrofit).
+// 2. Add the following dependency in the app build.gradle file:
+//      implementation 'io.approov:service.retrofit'
+//
+//includeBuild('../../approov-service-retrofit') {
+//    dependencySubstitution {
+//        substitute(module("io.approov:service.retrofit")).using(project(":approov-service"))
+//    }
+//}
