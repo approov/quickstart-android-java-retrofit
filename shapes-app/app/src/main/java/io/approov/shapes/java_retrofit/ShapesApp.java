@@ -31,7 +31,7 @@ public class ShapesApp extends Application {
         super.onCreate();
 
         // *** UNCOMMENT THE LINE BELOW FOR APPROOV ***
-        //ApproovService.initialize(getApplicationContext(), "#cb-johannes#nVuPhpIuihaHN+PmN/P3Id0Z+JQSHjFfvc+wUR9Z174=");
+        //ApproovService.initialize(getApplicationContext(), "<enter-your-config-string-here>");
 
         // *** UNCOMMENT THE LINES BELOW FOR APPROOV WITH INSTALLATION MESSAGE SIGNING ***
         //ApproovService.setApproovInterceptorExtensions(
