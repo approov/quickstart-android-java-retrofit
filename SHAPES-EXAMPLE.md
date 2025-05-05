@@ -45,7 +45,7 @@ The `approov-service-retrofit` dependency needs to be added as follows to the `a
 The Maven dependency reference is:
 
 ```
-implementation("io.approov:service.retrofit:3.4.0")
+implementation("io.approov:service.retrofit:3.4.1")
 ```
 
 Make sure you do a Gradle sync (by selecting `Sync Now` in the banner at the top of the modified `.gradle` file) after making these changes.

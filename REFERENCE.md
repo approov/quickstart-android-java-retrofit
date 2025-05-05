@@ -22,8 +22,14 @@ The [application context](https://developer.android.com/reference/android/conten
 
 It is possible to pass an empty `config` string to indicate that no initialization is required. Only do this if you are also using a different Approov quickstart in your app (which will use the same underlying Approov SDK) and this will have been initialized first.
 
+An alternative initialization function allows to provide further options in the `comment` parameter. Please refer to the [Approov SDK documentation](https://approov.io/docs/latest/approov-direct-sdk-integration/#sdk-initialization-options) for details.
+
+```Java
+void initialize(Context context, String config, String comment)
+```
+
 ## GetRetrofit
-Gets the `Retrofit` instance that enables the Approov service, given a `builder` for it. This adds the Approov token in a header to requests, performs and header or query parameter substitutions and also pins the connections. You *MUST* always obtain the `Retrofit` instance using this method for all requests, to ensure an up to date client is used with the latest dynamic pins.
+Gets the `Retrofit` instance that enables the Approov service, given a `builder` for it. This adds the Approov token in a header to requests, performs and header or query parameter substitutions and also pins the connections.
 
 ```Java
 Retrofit getRetrofit(Retrofit.Builder builder)

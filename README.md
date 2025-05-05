@@ -11,7 +11,7 @@ The Approov integration is available via [`maven`](https://mvnrepository.com/rep
 The `Maven` repository is already present in the gradle.build file so the only import you need to make is the actual service layer itself:
 
 ```
-implementation("io.approov:service.retrofit:3.4.0")
+implementation("io.approov:service.retrofit:3.4.1")
 ```
 
 Make sure you do a Gradle sync (by selecting `Sync Now` in the banner at the top of the modified `.gradle` file) after making these changes.
@@ -28,7 +28,7 @@ The following app permissions need to be available in the manifest to use Approo
 <uses-permission android:name="android.permission.INTERNET" />
 ```
 
-Note that the minimum SDK version you can use with the Approov package is 21 (Android 5.0). 
+Note that the minimum SDK version you can use with the Approov package is 23 (Android 6.0). 
 
 Please [read this](https://approov.io/docs/latest/approov-usage-documentation/#targeting-android-11-and-above) section of the reference documentation if targeting Android 11 (API level 30) or above.
 
@@ -69,7 +69,7 @@ public class ClientInstance {
 
 This obtains a retrofit instance includes an `OkHttp` interceptor that protects channel integrity (with either pinning or managed trust roots). The interceptor may also add `Approov-Token` or substitute app secret values, depending upon your integration choices. You should thus use this client for all API calls you may wish to protect.
 
-Approov errors will generate an `ApproovException`, which is a type of `IOException`. This may be further specialized into an `ApproovNetworkException`, indicating an issue with networking that should provide an option for a user initiated retry (which must make the new request with a call to the `getRetrofit` to get the latest client).
+Approov errors will generate an `ApproovException`, which is a type of `IOException`. This may be further specialized into an `ApproovNetworkException`, indicating an issue with networking that should provide an option for a user initiated retry.
 
 ## CUSTOM OKHTTP BUILDER
 By default, the Retrofit instance gets a default client constructed with `new OkHttpClient()`. However, your existing code may use a customized `OkHttpClient` with, for instance, different timeouts or other interceptors. For example, if you have existing code:
