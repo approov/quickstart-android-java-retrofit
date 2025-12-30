@@ -223,3 +223,12 @@ String fetchCustomJWT(String payload) throws ApproovException
 ```
 
 This throws `ApproovException` if there was a problem obtaining the custom JWT. This may require network access so may take some time to complete, and should not be called from the UI thread.
+
+## getLastARC
+Obtains the last [Attestation Response Code](https://ext.approov.io/docs/latest/approov-usage-documentation/#attestation-response-code) provided a network request to the Approov servers has succeeded. 
+
+```Java
+String getLastARC()
+```
+
+In the event of no network available this function returns an empty string. This function should be used with *CAUTION* and instead rely on a customized error response from the server which includes the `ARC` code if one is available. 
